@@ -1,0 +1,9 @@
+.background-card{
+    background-color: rgb(51, 163, 248);
+    color: #fff;
+    border-radius: 10px;
+}
+.title{
+    font-size: 20px;
+    padding-bottom: 5px;
+}

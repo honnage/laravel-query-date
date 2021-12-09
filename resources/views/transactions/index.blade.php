@@ -1,4 +1,3 @@
-
 @extends('layouts.index')
 @section('content')
     <div class="py-12">
@@ -8,6 +7,18 @@
                     @if(session("success"))
                         <div class="alert alert-success">{{ session("success") }}</div>
                     @endif
+                  
+                    <div class="row">
+                        <div class="col-md-3 background-card">
+                            <div class="card-body" >
+                                <nav class="title">ผู้ใช้รายใหม่ </nav>
+                                <nav>จำนวน <span style="float: right;"> {{$countNewUser}} คน </span></nav>
+                            </div>   
+                        </div>
+                       
+                    </div>
+                    <br>
+
                     <div class="card">
                         <div class="card-header" style="font-size: 24px;">ตารางข้อมูล Transactions</div>
                         <div class="table-responsive">
@@ -23,9 +34,9 @@
                                         <th scope="col"><center>จำนวนธุรกรรม</center></th>
                                         <th scope="col"><center>จำนวนวัน</center></th>
                                         <th scope="col"><center>dataDiff</center></th>
+                                        <th scope="col"><center>statusUser</center></th>
                                         <th scope="col"><center>status</center></th>
                                         <th scope="col"><center>cancel</center></th>
-                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -39,12 +50,17 @@
                                         <td><center>{{$row->countTrans}}</center></td>                    
                                         <td><center>{{$row->countDate}}</center></td>
                                         <td><center>{{$row->dataDiff}}</center></td>
+                                        <td><center>{{$row->statusUser}}</center></td>
                                         <td><center>{{$row->status}}</center></td>
-                                        <td><center>{{$row->cancel}}</center></td>
+                                        <td><center>{{$row->cancel}}</center></td> 
                                     </tr>
+                                    <?php $sum = $transactions->firstItem()+$loop->index ?>
                                     @endforeach
+                                   
                                 </tbody>
+                                
                             </table>
+                
                             @else
                                 <h3 style="color:red; text-align:center ;padding-top: 20px; padding-bottom: 20px">-- ไม่มีข้อมูล หมวดหมู่ --</h3>
                             @endif

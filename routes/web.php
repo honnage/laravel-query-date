@@ -19,3 +19,4 @@ Route::get('/', function () {
 
 
 Route::get('/transactions/all', [TransactionsController::class, 'index'])->name('transactions.index');
+Route::get('/transactions/branch:{branch}', [TransactionsController::class, 'branch'])->name('transactions.branch');
