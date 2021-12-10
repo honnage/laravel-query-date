@@ -8,6 +8,7 @@
                     <div class="alert alert-success">{{ session("success") }}</div>
                 @endif
                 
+     
                 <div class="row ">
                     <div class="col-md-3">
                         <div class="background-card" style="background-color: rgb(51, 163, 248);">
@@ -43,11 +44,9 @@
                     </div>
                 </div>
 
-                {{$branch}}
-
                 <form action="{{url('/transactions/store/branch:'.$branch)}}" method="post">
                     @csrf
-                    <input type="submit" value="บันทึกลง daatbase" class="btn btn-success my-3">
+                    <input type="submit" value="บันทึกลง database" class="btn btn-success my-3">
                 </form>
                         
                 <div class="card">

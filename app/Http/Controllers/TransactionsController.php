@@ -11,8 +11,8 @@ class TransactionsController extends Controller
     public function historyReports(Request $request, $branch)
     {
         $dateTime_Start = '2019-01-01 00:00:00';
-        $dateTime_Last = '2021-08-31 23:59:59';
-        $monthSelected = 8;
+        $dateTime_Last = '2021-10-30 23:59:59';
+        $monthSelected = 10;
         $yearSelected = 2021;
         $provisoDay = 60;
         // $informationWhen = "2021/9";
@@ -30,10 +30,10 @@ class TransactionsController extends Controller
                     THEN 'Active' 
                     ELSE 'Deprecated' 
                     END statusActive"),
-                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected  
                     THEN 'new user' 
                     ELSE 'old user' 
-                    END statusUser")
+                    END statusUser ")
             )
             ->where('machineId', $branch)
             ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
@@ -55,6 +55,7 @@ class TransactionsController extends Controller
                 "updated_at" => Carbon::now(),
             );
 
+            // select data by table history_reports 
             $select_HistoryReports = DB::table('history_reports')
                 ->select(
                     'phone',
@@ -73,20 +74,31 @@ class TransactionsController extends Controller
                 ->get();
 
             if (count($select_HistoryReports) == 0)
-                $history_reports = DB::table('history_reports')->insert($newData);
+                DB::table('history_reports')->insert($newData);
             else {
-                dd(count($select_HistoryReports));
+                DB::table('history_reports')
+                    ->where('phone', $data->refNumber)
+                    ->where('branch', $data->machineId)
+                    ->where('lastDate', $data->lastDate)
+                    ->update([
+                        'lastDate' => $data->lastDate,
+                        'countTrans'=> $data->countTrans,
+                        'countDate' => $data->countDate,
+                        'dataDiff' => $data->dataDiff,
+                        'statusActive' => $data->statusActive,
+                        'updated_at' => Carbon::now()
+                    ]);
             }
-            // { UPDATE }
         }
+        return redirect()->back();
     }
 
 
     public function branch($branch)
     {
         $dateTime_Start = '2019-01-01 00:00:00';
-        $dateTime_Last = '2021-08-31 23:59:59';
-        $monthSelected = 8;
+        $dateTime_Last = '2021-10-30 23:59:59';
+        $monthSelected = 10;
         $yearSelected = 2021;
         $provisoDay = 60;
 
@@ -147,11 +159,16 @@ class TransactionsController extends Controller
                 DB::raw('MIN(transactions.createdAt) AS startDate'),
                 DB::raw('MAX(transactions.createdAt) AS lastDate'),
                 DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
-                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate')
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected 
+                    THEN 'new user' 
+                    ELSE 'old user' 
+                    END statusUser ")
             )
             ->where('machineId', $branch)
             ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
             ->groupBy('refNumber', 'machineId')
+            ->having('statusUser', 'new user')
             ->havingBetween('startDate', [$dateTime_Start, $dateTime_Last])
             ->orderBy('startDate')
             ->get();
