@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Store 2D&3D</title>
+        <title>test</title>
 
 
         <link href="{{ asset('css/style.css') }}" rel="stylesheet">
@@ -30,17 +30,11 @@
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
             
-            <a class="navbar-brand ps-3" href="/">ddd</a>
+            <a class="navbar-brand ps-3" href="/">Selected Data</a>
    
 
             <!-- Navbar Search-->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0" action="{{url('/')}}" method="get">
-                <div class="input-group">
-                    <input class="form-control" type="text" type="search" name="search" placeholder="ค้นหา ชิ้นงาน..." aria-label="Search for..." aria-describedby="btnNavbarSearch"  />
-                    <button class="btn btn-primary" id="btnNavbarSearch" type="submit"><i class="fas fa-search"></i></button>
-                </div>
-                
-            </form>
+            
             @guest
              
             @else

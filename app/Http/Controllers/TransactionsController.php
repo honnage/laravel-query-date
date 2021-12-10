@@ -4,46 +4,92 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class TransactionsController extends Controller
 {
-    // public function index()
-    // {
-    //     // //  แบบที่ 1 
-    //     $select = DB::table('transactions')
-    //         ->select(
-    //             'refNumber',
-    //             'machineId',
-    //             DB::raw('MIN(transactions.createdAt) AS startDate'),
-    //             DB::raw('MAX(transactions.createdAt) AS lastDate'),
-    //             DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
-    //             DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
-    //             DB::raw("DATEDIFF('2021-08-31 23:59:59', MAX(transactions.createdAt)) AS dataDiff"),
-    //             DB::raw("CASE WHEN DATEDIFF( '2021-08-31 23:59:59',  MAX(transactions.createdAt)) <= 60 THEN 'Active' ELSE 'cancel serve' END status"),
-    //             // DB::raw("CASE 
-    //             //     WHEN DATEDIFF( '2021-08-31 23:59:59',  MAX(transactions.createdAt)) >= 120  THEN '9' 
-    //             //     WHEN DATEDIFF( '2021-08-31 23:59:59',  MAX(transactions.createdAt)) >= 90 THEN '10'
-    //             //     WHEN DATEDIFF( '2021-08-31 23:59:59',  MAX(transactions.createdAt)) >= 60 THEN '11'
-    //             //     ELSE 'no cancel' END cancel "),
-    //             DB::raw("CASE WHEN DATEDIFF( '2021-08-31 23:59:59',  MAX(transactions.createdAt)) >= 60 THEN '9' ELSE 'no cancel' END cancel ")
-    //         )
-    //         // ->where('refNumber', '0610282417')
-    //         ->where('machineId', '18')
-    //         ->whereBetween('createdAt', ['2019-01-01 00:00:00', '2021-08-31 23:59:59'])
-    //         ->groupBy('refNumber', 'machineId')
-    //         // ->orderBy('machineId')
-    //         ->orderBy('startDate')
-    //         ->paginate(2000);
+    public function historyReports(Request $request, $branch)
+    {
+        $dateTime_Start = '2019-01-01 00:00:00';
+        $dateTime_Last = '2021-08-31 23:59:59';
+        $monthSelected = 8;
+        $yearSelected = 2021;
+        $provisoDay = 60;
+        // $informationWhen = "2021/9";
 
-    //     // dd($select);
-    //     $transactions = $select;
-    //     return view('transactions.index', compact('transactions'));
-    //     // return view('transactions.index');
-    // }
+        $selected = DB::table('transactions')
+            ->select(
+                'refNumber',
+                'machineId',
+                DB::raw('MIN(transactions.createdAt) AS startDate'),
+                DB::raw('MAX(transactions.createdAt) AS lastDate'),
+                DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
+                DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
+                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                    THEN 'Active' 
+                    ELSE 'Deprecated' 
+                    END statusActive"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                    THEN 'new user' 
+                    ELSE 'old user' 
+                    END statusUser")
+            )
+            ->where('machineId', $branch)
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
+            ->groupBy('refNumber', 'machineId')
+            ->orderBy('startDate')
+            ->get();
+
+        foreach ($selected as $data) {
+            $newData = array(
+                "phone" => $data->refNumber,
+                "branch" => $data->machineId,
+                "startDate" => $data->startDate,
+                "lastDate" => $data->lastDate,
+                "countTrans" => $data->countTrans,
+                "countDate" => $data->countDate,
+                "dataDiff" => $data->dataDiff,
+                "statusActive" => $data->statusActive,
+                "created_at" => Carbon::now(),
+                "updated_at" => Carbon::now(),
+            );
+
+            $select_HistoryReports = DB::table('history_reports')
+                ->select(
+                    'phone',
+                    'branch',
+                    'startDate',
+                    'lastDate',
+                    'countTrans',
+                    'countDate',
+                    'dataDiff',
+                    'statusActive',
+                )
+                ->where('phone', $data->refNumber)
+                ->where('branch', $data->machineId)
+                ->where('lastDate', $data->lastDate)
+                ->orderBy('startDate')
+                ->get();
+
+            if (count($select_HistoryReports) == 0)
+                $history_reports = DB::table('history_reports')->insert($newData);
+            else {
+                dd(count($select_HistoryReports));
+            }
+            // { UPDATE }
+        }
+    }
 
 
     public function branch($branch)
     {
+        $dateTime_Start = '2019-01-01 00:00:00';
+        $dateTime_Last = '2021-08-31 23:59:59';
+        $monthSelected = 8;
+        $yearSelected = 2021;
+        $provisoDay = 60;
+
         $transactions = DB::table('transactions')
             ->select(
                 'refNumber',
@@ -52,17 +98,47 @@ class TransactionsController extends Controller
                 DB::raw('MAX(transactions.createdAt) AS lastDate'),
                 DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
                 DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
-                DB::raw("DATEDIFF('2021-08-31 23:59:59', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( '2021-08-31 23:59:59',  MAX(transactions.createdAt)) <= 60 THEN 'Active' ELSE 'cancel serve' END status"),
-                DB::raw("CASE WHEN DATEDIFF( '2021-08-31 23:59:59',  MAX(transactions.createdAt)) >= 60 THEN 'deprecated' ELSE 'use work' END cancel "),
-                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = 8  AND MIN(YEAR(transactions.createdAt)) = 2021 THEN 'new user' ELSE 'order user' END statusUser ")
+                DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
+                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last', MAX(transactions.createdAt)) <= $provisoDay
+                    THEN 'Active' 
+                    ELSE 'Deprecated' 
+                    END statusActive"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected 
+                    THEN 'new user' 
+                    ELSE 'old user' 
+                    END statusUser ")
             )
             ->where('machineId', $branch)
-            ->whereBetween('createdAt', ['2019-01-01 00:00:00', '2021-08-31 23:59:59'])
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
             ->groupBy('refNumber', 'machineId')
             ->orderBy('startDate')
-            ->paginate(2000);
+            ->paginate(500);
 
+        // dd( $dateTime_Last);
+
+        $users = DB::table('transactions')
+            ->select(
+                'refNumber',
+                'machineId',
+                DB::raw('MIN(transactions.createdAt) AS startDate'),
+                DB::raw('MAX(transactions.createdAt) AS lastDate'),
+                DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
+                DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
+                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                    THEN 'Active' 
+                    ELSE 'Deprecated' 
+                    END statusActive"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected  
+                    THEN 'new user' 
+                    ELSE 'old user'
+                    END statusUser ")
+            )
+            ->where('machineId', $branch)
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
+            ->groupBy('refNumber', 'machineId')
+            ->orderBy('startDate')
+            ->get();
 
         $newUser = DB::table('transactions')
             ->select(
@@ -74,14 +150,66 @@ class TransactionsController extends Controller
                 DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate')
             )
             ->where('machineId', $branch)
-            ->whereBetween('createdAt', ['2019-01-01 00:00:00', '2021-08-31 23:59:59'])
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
             ->groupBy('refNumber', 'machineId')
-            ->havingBetween('startDate', ['2021-08-01 00:00:00', '2021-08-31 23:59:59'] )
+            ->havingBetween('startDate', [$dateTime_Start, $dateTime_Last])
             ->orderBy('startDate')
             ->get();
 
-        $countNewUser =  $newUser->count();
+        $activeUser = DB::table('transactions')
+            ->select(
+                'refNumber',
+                'machineId',
+                DB::raw('MIN(transactions.createdAt) AS startDate'),
+                DB::raw('MAX(transactions.createdAt) AS lastDate'),
+                DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
+                DB::raw("DATEDIFF('2$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
+                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                    THEN 'Active' 
+                    ELSE 'Deprecated' 
+                    END statusActive"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected  
+                    THEN 'new user' 
+                    ELSE 'old user' 
+                    END statusUser ")
+            )
+            ->where('machineId', $branch)
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
+            ->groupBy('refNumber', 'machineId')
+            ->having('statusActive', 'Active')
+            ->orderBy('startDate')
+            ->get();
 
-        return view('transactions.index', compact('transactions', 'countNewUser'));
+        $deprecatedUser = DB::table('transactions')
+            ->select(
+                'refNumber',
+                'machineId',
+                DB::raw('MIN(transactions.createdAt) AS startDate'),
+                DB::raw('MAX(transactions.createdAt) AS lastDate'),
+                DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
+                DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
+                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                    THEN 'Active' 
+                    ELSE 'Deprecated' 
+                    END statusActive"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected  
+                    THEN 'new user' 
+                    ELSE 'old user' 
+                    END statusUser ")
+            )
+            ->where('machineId', $branch)
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
+            ->groupBy('refNumber', 'machineId')
+            ->having('statusActive', 'deprecated')
+            ->orderBy('startDate')
+            ->get();
+
+        $countUser = $users->count();
+        $countNewUser =  $newUser->count();
+        $countActiveUser = $activeUser->count();
+        $countDeprecatedUser = $deprecatedUser->count();
+        return view('transactions.index', compact('transactions', 'countNewUser', 'countUser', 'countActiveUser', 'countDeprecatedUser', 'branch'));
     }
 }
