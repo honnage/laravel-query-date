@@ -10,12 +10,11 @@ class TransactionsController extends Controller
 {
     public function historyReports(Request $request, $branch)
     {
-        $dateTime_Start = '2019-01-01 00:00:00';
-        $dateTime_Last = '2021-10-30 23:59:59';
         $monthSelected = 10;
         $yearSelected = 2021;
-        $provisoDay = 60;
-        // $informationWhen = "2021/9";
+        $dateTime_Start = "2019-01-01 00:00:00";
+        $dateTime_Last = "$yearSelected-$monthSelected-30 23:59:59";
+        $dateTime_Select = "$yearSelected-$monthSelected-01 00:00:00";
 
         $selected = DB::table('transactions')
             ->select(
@@ -26,7 +25,7 @@ class TransactionsController extends Controller
                 DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
                 DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
                 DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                DB::raw("CASE WHEN DATEDIFF( MAX(transactions.createdAt) , TIMESTAMPADD(MONTH, -2, '$dateTime_Select') ) > 0
                     THEN 'Active' 
                     ELSE 'Deprecated' 
                     END statusActive"),
@@ -51,6 +50,7 @@ class TransactionsController extends Controller
                 "countDate" => $data->countDate,
                 "dataDiff" => $data->dataDiff,
                 "statusActive" => $data->statusActive,
+                "statusUser" => $data->statusUser,
                 "created_at" => Carbon::now(),
                 "updated_at" => Carbon::now(),
             );
@@ -66,10 +66,11 @@ class TransactionsController extends Controller
                     'countDate',
                     'dataDiff',
                     'statusActive',
+                    "statusUser" ,
                 )
                 ->where('phone', $data->refNumber)
                 ->where('branch', $data->machineId)
-                ->where('lastDate', $data->lastDate)
+                // ->where('lastDate', $data->lastDate)
                 ->orderBy('startDate')
                 ->get();
 
@@ -90,18 +91,19 @@ class TransactionsController extends Controller
                     ]);
             }
         }
-        return redirect()->back();
+        return redirect()->back()->with('success','บันทึกข้อมูลเรียบร้อย');
     }
 
 
     public function branch($branch)
     {
-        $dateTime_Start = '2019-01-01 00:00:00';
-        $dateTime_Last = '2021-10-30 23:59:59';
         $monthSelected = 10;
         $yearSelected = 2021;
-        $provisoDay = 60;
-
+        $dateTime_Start = "2019-01-01 00:00:00";
+        $dateTime_Last = "$yearSelected-$monthSelected-30 23:59:59";
+        $dateTime_Select = "$yearSelected-$monthSelected-01 00:00:00";
+      
+        // $provisoDay = 60;
         $transactions = DB::table('transactions')
             ->select(
                 'refNumber',
@@ -111,7 +113,7 @@ class TransactionsController extends Controller
                 DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
                 DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
                 DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last', MAX(transactions.createdAt)) <= $provisoDay
+                DB::raw("CASE WHEN DATEDIFF( MAX(transactions.createdAt) , TIMESTAMPADD(MONTH, -2, '$dateTime_Select') ) > 0
                     THEN 'Active' 
                     ELSE 'Deprecated' 
                     END statusActive"),
@@ -126,8 +128,6 @@ class TransactionsController extends Controller
             ->orderBy('startDate')
             ->paginate(500);
 
-        // dd( $dateTime_Last);
-
         $users = DB::table('transactions')
             ->select(
                 'refNumber',
@@ -137,7 +137,7 @@ class TransactionsController extends Controller
                 DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
                 DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
                 DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                DB::raw("CASE WHEN DATEDIFF( MAX(transactions.createdAt) , TIMESTAMPADD(MONTH, -2, '$dateTime_Select') ) > 0
                     THEN 'Active' 
                     ELSE 'Deprecated' 
                     END statusActive"),
@@ -182,7 +182,7 @@ class TransactionsController extends Controller
                 DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
                 DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
                 DB::raw("DATEDIFF('2$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                DB::raw("CASE WHEN DATEDIFF( MAX(transactions.createdAt) , TIMESTAMPADD(MONTH, -2, '$dateTime_Select') ) > 0
                     THEN 'Active' 
                     ELSE 'Deprecated' 
                     END statusActive"),
@@ -207,7 +207,7 @@ class TransactionsController extends Controller
                 DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
                 DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
                 DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) <= $provisoDay 
+                DB::raw("CASE WHEN DATEDIFF( MAX(transactions.createdAt) , TIMESTAMPADD(MONTH, -2, '$dateTime_Select') ) > 0
                     THEN 'Active' 
                     ELSE 'Deprecated' 
                     END statusActive"),

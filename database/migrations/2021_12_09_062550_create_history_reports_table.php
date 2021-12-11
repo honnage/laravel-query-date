@@ -22,7 +22,9 @@ class CreateHistoryReportsTable extends Migration
             $table->integer('countTrans');
             $table->integer('countDate');
             $table->integer('dataDiff');
+            $table->string('statusUser');
             $table->string('statusActive');
+            // $table->datetime('select_at');
             $table->timestamps();
         });
     }

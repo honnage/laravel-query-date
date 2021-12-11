@@ -8,7 +8,6 @@
                     <div class="alert alert-success">{{ session("success") }}</div>
                 @endif
                 
-     
                 <div class="row ">
                     <div class="col-md-3">
                         <div class="background-card" style="background-color: rgb(51, 163, 248);">
