@@ -55,7 +55,6 @@ class TransactionsController extends Controller
                 "updated_at" => Carbon::now(),
             );
 
-            // select data by table history_reports 
             $select_HistoryReports = DB::table('history_reports')
                 ->select(
                     'phone',
@@ -66,24 +65,61 @@ class TransactionsController extends Controller
                     'countDate',
                     'dataDiff',
                     'statusActive',
-                    "statusUser" ,
+                    "statusUser",
                 )
                 ->where('phone', $data->refNumber)
                 ->where('branch', $data->machineId)
-                // ->where('lastDate', $data->lastDate)
                 ->orderBy('startDate')
                 ->get();
 
-            if (count($select_HistoryReports) == 0)
+            $select_HistoryReportDetails = DB::table('history_report_details')
+                ->select(
+                    'phone',
+                    'branch',
+                    'startDate',
+                    'lastDate',
+                    'countTrans',
+                    'countDate',
+                    'dataDiff',
+                    'statusActive',
+                    "statusUser",
+                    "dataDiff",
+                )
+                ->where('phone', $data->refNumber)
+                ->where('branch', $data->machineId)
+                ->where('lastDate', $data->lastDate)
+                ->orderBy('startDate')
+                ->get();
+
+          
+            if (count($select_HistoryReportDetails) == 0) {
+                DB::table('history_report_details')->insert($newData);
+            }
+
+            if (count($select_HistoryReports) == 0){
                 DB::table('history_reports')->insert($newData);
-            else {
+
+                // if (count($select_HistoryReportDetails) != 0){ 
+                //     DB::table('history_report_details')
+                //     ->where('phone', $data->refNumber)
+                //     ->where('branch', $data->machineId)
+                //     ->where('lastDate', $data->lastDate)
+                //     ->update([
+                //         'lastDate' => $data->lastDate,
+                //         'countTrans'=> $data->countTrans,
+                //         'countDate' => $data->countDate,
+                //         'dataDiff' => $data->dataDiff,
+                //         'statusActive' => $data->statusActive,
+                //         'updated_at' => Carbon::now()
+                //     ]);
+            }else {
                 DB::table('history_reports')
                     ->where('phone', $data->refNumber)
                     ->where('branch', $data->machineId)
                     ->where('lastDate', $data->lastDate)
                     ->update([
                         'lastDate' => $data->lastDate,
-                        'countTrans'=> $data->countTrans,
+                        'countTrans' => $data->countTrans,
                         'countDate' => $data->countDate,
                         'dataDiff' => $data->dataDiff,
                         'statusActive' => $data->statusActive,
@@ -91,7 +127,7 @@ class TransactionsController extends Controller
                     ]);
             }
         }
-        return redirect()->back()->with('success','บันทึกข้อมูลเรียบร้อย');
+        return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย');
     }
 
 
@@ -102,7 +138,7 @@ class TransactionsController extends Controller
         $dateTime_Start = "2019-01-01 00:00:00";
         $dateTime_Last = "$yearSelected-$monthSelected-30 23:59:59";
         $dateTime_Select = "$yearSelected-$monthSelected-01 00:00:00";
-      
+
         // $provisoDay = 60;
         $transactions = DB::table('transactions')
             ->select(
