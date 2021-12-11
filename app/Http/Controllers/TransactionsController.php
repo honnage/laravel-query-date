@@ -10,13 +10,16 @@ class TransactionsController extends Controller
 {
     public function historyReports(Request $request, $branch)
     {
-        $monthSelected = 10;
+        $monthSelected = 9;
         $yearSelected = 2021;
         $dateTime_Start = "2019-01-01 00:00:00";
         $dateTime_Last = "$yearSelected-$monthSelected-30 23:59:59";
         $dateTime_Select = "$yearSelected-$monthSelected-01 00:00:00";
 
-        $selected = DB::table('transactions')
+        // for($i = 0; $i < 10; $i++ ){
+            // $monthSelected = 1;
+
+            $selected = DB::table('transactions')
             ->select(
                 'refNumber',
                 'machineId',
@@ -40,100 +43,110 @@ class TransactionsController extends Controller
             ->orderBy('startDate')
             ->get();
 
-        foreach ($selected as $data) {
-            $newData = array(
-                "phone" => $data->refNumber,
-                "branch" => $data->machineId,
-                "startDate" => $data->startDate,
-                "lastDate" => $data->lastDate,
-                "countTrans" => $data->countTrans,
-                "countDate" => $data->countDate,
-                "dataDiff" => $data->dataDiff,
-                "statusActive" => $data->statusActive,
-                "statusUser" => $data->statusUser,
-                "created_at" => Carbon::now(),
-                "updated_at" => Carbon::now(),
-            );
+            foreach ($selected as $data) {
+                $newData = array(
+                    "phone" => $data->refNumber,
+                    "branch" => $data->machineId,
+                    "startDate" => $data->startDate,
+                    "lastDate" => $data->lastDate,
+                    "countTrans" => $data->countTrans,
+                    "countDate" => $data->countDate,
+                    "dataDiff" => $data->dataDiff,
+                    "statusActive" => $data->statusActive,
+                    "statusUser" => $data->statusUser,
+                    "created_at" => Carbon::now(),
+                    "updated_at" => Carbon::now(),
+                    "monthQuery" =>  $monthSelected,
+                    "yearSelected" =>  $yearSelected,
+                );
 
-            $select_HistoryReports = DB::table('history_reports')
-                ->select(
-                    'phone',
-                    'branch',
-                    'startDate',
-                    'lastDate',
-                    'countTrans',
-                    'countDate',
-                    'dataDiff',
-                    'statusActive',
-                    "statusUser",
-                )
-                ->where('phone', $data->refNumber)
-                ->where('branch', $data->machineId)
-                ->orderBy('startDate')
-                ->get();
+                $select_HistoryReports = DB::table('history_reports')
+                    ->select(
+                        'phone',
+                        'branch',
+                        'startDate',
+                        'lastDate',
+                        'countTrans',
+                        'countDate',
+                        'dataDiff',
+                        'statusActive',
+                        "statusUser",
+                    )
+                    ->where('phone', $data->refNumber)
+                    ->where('branch', $data->machineId)
+                    ->orderBy('startDate')
+                    ->get();
 
-            $select_HistoryReportDetails = DB::table('history_report_details')
-                ->select(
-                    'phone',
-                    'branch',
-                    'startDate',
-                    'lastDate',
-                    'countTrans',
-                    'countDate',
-                    'dataDiff',
-                    'statusActive',
-                    "statusUser",
-                    "dataDiff",
-                )
-                ->where('phone', $data->refNumber)
-                ->where('branch', $data->machineId)
-                ->where('lastDate', $data->lastDate)
-                ->orderBy('startDate')
-                ->get();
-
-          
-            if (count($select_HistoryReportDetails) == 0) {
-                DB::table('history_report_details')->insert($newData);
-            }
-
-            if (count($select_HistoryReports) == 0){
-                DB::table('history_reports')->insert($newData);
-
-                // if (count($select_HistoryReportDetails) != 0){ 
-                //     DB::table('history_report_details')
-                //     ->where('phone', $data->refNumber)
-                //     ->where('branch', $data->machineId)
-                //     ->where('lastDate', $data->lastDate)
-                //     ->update([
-                //         'lastDate' => $data->lastDate,
-                //         'countTrans'=> $data->countTrans,
-                //         'countDate' => $data->countDate,
-                //         'dataDiff' => $data->dataDiff,
-                //         'statusActive' => $data->statusActive,
-                //         'updated_at' => Carbon::now()
-                //     ]);
-            }else {
-                DB::table('history_reports')
+                $select_HistoryReportDetails = DB::table('history_report_details')
+                    ->select(
+                        'phone',
+                        'branch',
+                        'startDate',
+                        'lastDate',
+                        'countTrans',
+                        'countDate',
+                        'dataDiff',
+                        'statusActive',
+                        "statusUser",
+                        "dataDiff",
+                    )
                     ->where('phone', $data->refNumber)
                     ->where('branch', $data->machineId)
                     ->where('lastDate', $data->lastDate)
-                    ->update([
-                        'lastDate' => $data->lastDate,
-                        'countTrans' => $data->countTrans,
-                        'countDate' => $data->countDate,
-                        'dataDiff' => $data->dataDiff,
-                        'statusActive' => $data->statusActive,
-                        'updated_at' => Carbon::now()
-                    ]);
-            }
+                    ->where('dataDiff', $data->dataDiff)
+                    ->orderBy('startDate')
+                    ->get();
+
+            
+                if (count($select_HistoryReportDetails) == 0) {
+                    DB::table('history_report_details')->insert($newData);
+                }
+
+                if (count($select_HistoryReports) == 0){
+                    DB::table('history_reports')->insert($newData);
+
+                    // if (count($select_HistoryReportDetails) != 0){ 
+                    //     DB::table('history_report_details')
+                    //     ->where('phone', $data->refNumber)
+                    //     ->where('branch', $data->machineId)
+                    //     ->where('lastDate', $data->lastDate)
+                    //     ->update([
+                    //         'lastDate' => $data->lastDate,
+                    //         'countTrans'=> $data->countTrans,
+                    //         'countDate' => $data->countDate,
+                    //         'dataDiff' => $data->dataDiff,
+                    //         'statusActive' => $data->statusActive,
+                    //         'updated_at' => Carbon::now()
+                    //     ]);
+                }else {
+                    DB::table('history_reports')
+                        ->where('phone', $data->refNumber)
+                        ->where('branch', $data->machineId)
+                        ->where('lastDate', $data->lastDate)
+                        ->update([
+                            'lastDate' => $data->lastDate,
+                            'countTrans' => $data->countTrans,
+                            'countDate' => $data->countDate,
+                            'dataDiff' => $data->dataDiff,
+                            'statusActive' => $data->statusActive,
+                            "monthQuery" =>  $monthSelected,
+                            "yearSelected" =>  $yearSelected,
+                            'updated_at' => Carbon::now()
+                        ]);
+                }
+            //     $monthSelected += 1;
+                
+            // }
         }
+
+        
         return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย');
     }
 
 
     public function branch($branch)
     {
-        $monthSelected = 10;
+        $monthSelected = 11;
         $yearSelected = 2021;
         $dateTime_Start = "2019-01-01 00:00:00";
         $dateTime_Last = "$yearSelected-$monthSelected-30 23:59:59";
