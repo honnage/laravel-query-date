@@ -43,10 +43,11 @@
                     </div>
                 </div>
 
-                <form action="{{url('/transactions/store/branch:'.$branch)}}" method="post">
+                <form action="{{url('/transactions/store/branch:'.$branch.'/year:'.$year.'/month:'.$month.'/day:'.$day)}}" method="post">
                     @csrf
                     <input type="submit" value="บันทึกลง database" class="btn btn-success my-3">
                 </form>
+               {{$year}} {{$month}} {{$day}}
                         
                 <div class="card">
                     <div class="card-header" style="font-size: 24px;">ตารางข้อมูล Transactions</div>
