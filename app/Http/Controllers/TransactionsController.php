@@ -34,9 +34,16 @@ class TransactionsController extends Controller
             // $daySelected_last = $day;   // $daySelected_last = 28;
             $daySelected_start = 1;     // $daySelected_start = 1;
 
+
             switch ( $month) { 
                 case '01':  $daySelected_last = 31; break;
-                case '02':  $daySelected_last = 28; break;
+                case '02':  
+                    if( ($year % 400 ==0) OR ($year % 4 == 0) AND ($year % 100 != 0)){
+                        $daySelected_last = 29; 
+                    }else{
+                        $daySelected_last = 28; 
+                    }
+                break;
                 case '03':  $daySelected_last = 31; break;
                 case '04':  $daySelected_last = 30; break;
                 case '05':  $daySelected_last = 31; break;
@@ -205,7 +212,13 @@ class TransactionsController extends Controller
 
         switch ( $month) { 
                     case '01':  $daySelected_last = 31; break;
-                    case '02':  $daySelected_last = 28; break;
+                    case '02':  
+                        if( ($year % 400 ==0) OR ($year % 4 == 0) AND ($year % 100 != 0)){
+                            $daySelected_last = 29; 
+                        }else{
+                            $daySelected_last = 28; 
+                        }
+                    break;
                     case '03':  $daySelected_last = 31; break;
                     case '04':  $daySelected_last = 30; break;
                     case '05':  $daySelected_last = 31; break;
