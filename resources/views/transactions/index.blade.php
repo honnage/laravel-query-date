@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <form action="{{url('/transactions/store/branch:'.$branch.'/year:'.$year.'/month:'.$month.'/day:'.$day)}}" method="post">
+                <form action="{{url('/transactions/store/branch:'.$branch.'/year:'.$year.'/month:'.$month)}}" method="post">
                     @csrf
                     <input type="submit" value="บันทึกลง database" class="btn btn-success my-3">
                 </form>

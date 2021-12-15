@@ -23,5 +23,5 @@ Route::get('/transactions/all', [TransactionsController::class, 'index'])->name(
 // Route::get('/transactions/branch:{branch}', [TransactionsController::class, 'branch'])->name('transactions.branch');
 // Route::post('/transactions/store/branch:{branch}',[TransactionsController::class,'historyReports'])->name('historyReports');
 
-Route::get('/transactions/branch:{branch}/year:{year}/month:{month}/day:{day}',[TransactionsController::class, 'branch'])->name('transactions.branch');
-Route::post('/transactions/store/branch:{branch}/year:{year}/month:{month}/day:{day}',[TransactionsController::class,'historyReports'])->name('historyReports');
+Route::get('/transactions/branch:{branch}/year:{year}/month:{month}',[TransactionsController::class, 'branch'])->name('transactions.branch');
+Route::post('/transactions/store/branch:{branch}/year:{year}/month:{month}',[TransactionsController::class,'historyReports'])->name('historyReports');
