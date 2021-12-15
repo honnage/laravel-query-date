@@ -10,33 +10,28 @@ class TransactionsController extends Controller
 {
     public function historyReports(Request $request, $branch, $year, $month, $day)
     {
-        // $yearSelected = "2021";
-        // $monthSelected = "02";
-        // $daySelected_last = 28;
-        // $daySelected_start = 1;
+        // for($i = 3; $i <= 6; $i++) {
+        //     switch ( $i) { 
+        //         case '1':   $daySelected_last = 31; break;
+        //         case '2':   $daySelected_last = 28; break;
+        //         case '3':   $daySelected_last = 31; break;
+        //         case '4':   $daySelected_last = 30; break;
+        //         case '5':   $daySelected_last = 31; break;
+        //         case '6':   $daySelected_last = 30; break;
+        //         case '7':   $daySelected_last = 31; break;
+        //         case '8':   $daySelected_last = 31; break;
+        //         case '9':   $daySelected_last = 30; break;
+        //         case '10':  $daySelected_last = 31; break;
+        //         case '11':  $daySelected_last = 30; break;  
+        //         case '12':  $daySelected_last = 31; break;
+        //         default:    /* code... */  break;
+        //     }
         
-        for($i = 3; $i <= 6; $i++) {
-            switch ( $i) { 
-                case '1':   $daySelected_last = 31; break;
-                case '2':   $daySelected_last = 28; break;
-                case '3':   $daySelected_last = 31; break;
-                case '4':   $daySelected_last = 30; break;
-                case '5':   $daySelected_last = 31; break;
-                case '6':   $daySelected_last = 30; break;
-                case '7':   $daySelected_last = 31; break;
-                case '8':   $daySelected_last = 31; break;
-                case '9':   $daySelected_last = 30; break;
-                case '10':  $daySelected_last = 31; break;
-                case '11':  $daySelected_last = 30; break;  
-                case '12':  $daySelected_last = 31; break;
-                default:    /* code... */  break;
-            }
-        
-            $yearSelected = $year;
-            // $monthSelected = $month;
-            $monthSelected = $i;
-            // $daySelected_last = $day;
-            $daySelected_start = 1;
+            $yearSelected = $year;      // $yearSelected = "2021";
+            $monthSelected = $month;    // $monthSelected = "02";
+            // $monthSelected = $i;
+            $daySelected_last = $day;   // $daySelected_last = 28;
+            $daySelected_start = 1;     // $daySelected_start = 1;
 
             $dateTime_Start = "2019-01-01 00:00:00";
             $dateTime_Last = "$yearSelected-$monthSelected-$daySelected_last 23:59:59";
@@ -129,20 +124,38 @@ class TransactionsController extends Controller
                     ->where('summaryDate', $dateTime_Summarry)
                     ->orderBy('startDate')
                     ->get();
+                
+                $select_month = DB::table('history_report_details_'.$yearSelected.'_'.$month)
+                    ->select(
+                        'phone',
+                        'branch',
+                        'startDate',
+                        'lastDate',
+                        'countTrans',
+                        'countDate',
+                        'dataDiff',
+                        'statusActive',
+                        "statusUser",
+                        'summaryDate',
+                    )
+                    ->where('phone', $data->refNumber)
+                    ->where('branch', $data->machineId)
+                    
+                    ->orderBy('startDate')
+                    ->get();
 
+               
+                if (count($select_month) == 0) {
+                    DB::table('history_report_details_'.$yearSelected.'_'.$month)->insert($newData);
+                }
 
                 if (count($select_HistoryReportDetails) == 0) {
                     DB::table('history_report_details')->insert($newData);
                 }
 
-               
-                // DB::table('history_report_details')->insert($newData);
 
                 if (count($select_HistoryReports) == 0) {
                     DB::table('history_reports')->insert($newData);
-
-                   
-    
                 } else {
                     DB::table('history_reports')
                         ->where('phone', $data->refNumber)
@@ -161,22 +174,17 @@ class TransactionsController extends Controller
                         ]);
                 }
             }
-        }
+        // }
         return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย');
     }
 
 
     public function branch($branch, $year, $month, $day)
     {
-        // $yearSelected = "2021";
-        // $monthSelected = "02";
-        // $daySelected_last = 28;
-        // $daySelected_start = 1;
-
-        $yearSelected = $year;
-        $monthSelected = $month;
-        $daySelected_last = $day;
-        $daySelected_start = 1;
+        $yearSelected = $year;      // $yearSelected = "2021";
+        $monthSelected = $month;    // $monthSelected = "02";
+        $daySelected_last = $day;   // $daySelected_last = 28;
+        $daySelected_start = 1;     // $daySelected_start = 1;
 
         $dateTime_Start = "2019-01-01 00:00:00";
         $dateTime_Last = "$yearSelected-$monthSelected-$daySelected_last 23:59:59";
