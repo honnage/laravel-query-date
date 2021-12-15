@@ -24,6 +24,7 @@ class CreateHistoryReportDetailsTable extends Migration
             $table->integer('dataDiff');
             $table->string('statusUser');
             $table->string('statusActive');
+            $table->string('usageMonth');
             $table->datetime('summaryDate');
             $table->timestamps();
         });

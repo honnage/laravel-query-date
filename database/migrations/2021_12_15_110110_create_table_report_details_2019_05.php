@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateHistoryReportsTable extends Migration
+class CreateTableReportDetails201905 extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateHistoryReportsTable extends Migration
      */
     public function up()
     {
-        Schema::create('history_reports', function (Blueprint $table) {
+        Schema::create('report_details_2019_05', function (Blueprint $table) {
             // $table->id();
             $table->string('phone');
             $table->string('branch');
@@ -37,6 +37,6 @@ class CreateHistoryReportsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('history_reports');
+        Schema::dropIfExists('report_details_2019_05');
     }
 }

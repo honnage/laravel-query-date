@@ -65,7 +65,9 @@
                                     <th scope="col"><center>จำนวนวัน</center></th>
                                     <th scope="col"><center>dataDiff</center></th>
                                     <th scope="col"><center>statusUser</center></th>
+                                    <th scope="col"><center>usageMonth</center></th>
                                     <th scope="col"><center>statusActive</center></th>
+                          
                                 </tr>
                             </thead>
                             <tbody>
@@ -80,6 +82,7 @@
                                     <td><center>{{number_format($row->countDate)}}</center></td>
                                     <td><center>{{number_format($row->dataDiff)}}</center></td>
                                     <td><center>{{$row->statusUser}}</center></td>
+                                    <td><center>{{$row->usageMonth}}</center></td>
                                     <td><center>{{$row->statusActive}}</center></td>
                                 </tr>
                                 <?php $sum = $transactions->firstItem()+$loop->index ?>
