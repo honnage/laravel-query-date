@@ -53,20 +53,28 @@
                     <div class="card-header" style="font-size: 24px;">ตารางข้อมูล Transactions</div>
                     <div class="table-responsive">
                         @if($transactions->count()>0)
-                        <table class="table table-striped">
+                        <table class="table table-striped" style="font-size: 12px">
                             <thead>
                                 <tr>
-                                    <th scope="col">ลำดับ</th>
-                                    <th scope="col">เบอร์โทรศัพท์</th>
-                                    <th scope="col"><center>สาขา</center></th>
+                                    <th scope="col">index</th>
+                                    <th scope="col"><center>machineId</center></th>
+                                    <th scope="col"><center>trans</center></th>
+                                    <th scope="col">amount</th>
+                                    <th scope="col">phone</th>
                                     <th scope="col"><center>startDate</center></th>
                                     <th scope="col"><center>lastDate</center></th>
-                                    <th scope="col"><center>จำนวนธุรกรรม</center></th>
-                                    <th scope="col"><center>จำนวนวัน</center></th>
-                                    <th scope="col"><center>dataDiff</center></th>
-                                    <th scope="col"><center>statusUser</center></th>
-                                    <th scope="col"><center>usageMonth</center></th>
-                                    <th scope="col"><center>statusActive</center></th>
+                                    <th scope="col"><center>customerStatus</center></th>
+                                    <th scope="col"><center>numberOfDays</center></th>
+
+                                    <th scope="col"><center>lastDayOfUse</center></th>
+                                    
+                                    <th scope="col"><center>numberOfMonth</center></th>
+                               
+                                    <th scope="col"><center>useInMonth</center></th>
+                                    <th scope="col"><center>ActiveStatus</center></th>
+                                    <th scope="col"><center>dataOfYear</center></th>
+                                    <th scope="col"><center>dataOfMonth</center></th>
+                                    
                           
                                 </tr>
                             </thead>
@@ -74,16 +82,21 @@
                                 @foreach ( $transactions as $row )
                                 <tr>
                                     <td style="padding-left: 20px;">{{$transactions->firstItem()+$loop->index}}</td>
-                                    <td>{{$row->refNumber}}</td>
-                                    <td><center>{{$row->machineId}}</center></td>  
+                                    <td><center>{{$row->branch}}</center></td>  
+                                    <td><center>{{number_format($row->trans)}}</center></td>    
+                                    <td><center>{{number_format($row->amount)}}</center></td>       
+                                    <td>{{$row->phone}}</td>
                                     <td><center>{{$row->startDate}}</center></td> 
                                     <td><center>{{$row->lastDate}}</center></td> 
-                                    <td><center>{{number_format($row->countTrans)}}</center></td>                    
-                                    <td><center>{{number_format($row->countDate)}}</center></td>
-                                    <td><center>{{number_format($row->dataDiff)}}</center></td>
-                                    <td><center>{{$row->statusUser}}</center></td>
-                                    <td><center>{{$row->usageMonth}}</center></td>
-                                    <td><center>{{$row->statusActive}}</center></td>
+                                    <td><center>{{$row->customerStatus}}</center></td>
+                                    <td><center>{{number_format($row->numberOfDays)}}</center></td>
+
+                                    <td><center>{{number_format($row->lastDayOfUse)}}</center></td>
+                                    <td><center>{{number_format($row->numberOfMonth)}}</center></td>
+                                    <td><center>{{$row->useInMonth}}</center></td>
+                                    <td><center>{{$row->ActiveStatus}}</center></td>
+                                    <td><center>{{$row->dataOfYear}}</center></td>
+                                    <td><center>{{$row->dataOfMonth}}</center></td>
                                 </tr>
                                 <?php $sum = $transactions->firstItem()+$loop->index ?>
                                 @endforeach
