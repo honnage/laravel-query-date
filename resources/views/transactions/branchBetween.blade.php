@@ -43,17 +43,22 @@
                     </div>
                 </div>
 
-                <form action="{{url('/transactions/store/branch:'.$branch.'/year:'.$year.'/month:'.$month)}}" method="post">
+                {{-- <form action="{{url('/transactions/store/branch:'.$branch.'/year:'.$year.'/month:'.$month)}}" method="post"> --}}
+                 {{-- http://127.0.0.1:8000/transactions/branch:18/year:2020/month:02/to/year:2020/month:4 --}}
+
+                <form action="{{url('/transactions/store/branch:'.$branch.'/year'.$year.'/month:'.$month.'/to/year'.$yearEnd.'/month:'.$monthEnd )}}" method="post">
                     @csrf
                     <input type="submit" value="บันทึกลง database" class="btn btn-success my-3">
                 </form>
                Start {{$year}} {{$month}} {{$day}}   <br>
 
                
-               @if($yearEnd != null)
-                End {{$yearEnd}} {{$monthEnd}} {{$dayEnd}} <br>
-                monthAll {{$monthAll}} m
-               @endif
+                @if($yearEnd != null)
+                    End {{$yearEnd}} {{$monthEnd}} {{$dayEnd}} <br>
+                    monthAll {{$monthAll}} m <br>
+                    Year  {{$countYear}}  Month {{$countMonth}}
+                @endif
+
     
                         
                 <div class="card">

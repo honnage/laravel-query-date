@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class TransactionsController extends Controller
+class TransactionsBetweenController extends Controller
 {
-    public function historyReports( $branch, $year, $month)
+    public function historyReportsBetween( $branch, $year, $month)
     {
         // for($i = 3; $i <= 6; $i++) {
         //     switch ( $i) { 
@@ -154,43 +154,70 @@ class TransactionsController extends Controller
         return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย');
     }
 
-
-    public function branch($branch, $year, $month)
+    public function branchBetween($branch, $yearStrat, $monthStart, $yearEnd, $monthEnd)
     {
+        function selectDate($month, $year){
+            switch ( $month) { 
+                case '01':  $daySelected_last = 31; break;
+                case '02':  
+                    if( ($year % 400 ==0) OR ($year % 4 == 0) AND ($year % 100 != 0)){
+                        $daySelected_last = 29; 
+                    }else{
+                        $daySelected_last = 28; 
+                    }
+                break;
+                case '03':  $daySelected_last = 31; break;
+                case '04':  $daySelected_last = 30; break;
+                case '05':  $daySelected_last = 31; break;
+                case '06':  $daySelected_last = 30; break;
+                case '07':  $daySelected_last = 31; break;
+                case '08':  $daySelected_last = 31; break;
+                case '09':  $daySelected_last = 30; break;
+                case '10':  $daySelected_last = 31; break;
+                case '11':  $daySelected_last = 30; break;  
+                case '12':  $daySelected_last = 31; break;
+                default:    /* code... */  break;
+            }
+            return $daySelected_last;
+        }
+
+        $year = $yearStrat;
+        $month = $monthStart;
         $yearSelected = $year;      // $yearSelected = "2021";
         $monthSelected = $month;    // $monthSelected = "02";
         // $daySelected_last = $day;   // $daySelected_last = 28;
         $daySelected_start = 1;     // $daySelected_start = 1;
 
-        switch ( $month) { 
-            case '01':  $daySelected_last = 31; break;
-            case '02':  
-                if( ($year % 400 ==0) OR ($year % 4 == 0) AND ($year % 100 != 0)){
-                    $daySelected_last = 29; 
-                }else{
-                    $daySelected_last = 28; 
-                }
-            break;
-            case '03':  $daySelected_last = 31; break;
-            case '04':  $daySelected_last = 30; break;
-            case '05':  $daySelected_last = 31; break;
-            case '06':  $daySelected_last = 30; break;
-            case '07':  $daySelected_last = 31; break;
-            case '08':  $daySelected_last = 31; break;
-            case '09':  $daySelected_last = 30; break;
-            case '10':  $daySelected_last = 31; break;
-            case '11':  $daySelected_last = 30; break;  
-            case '12':  $daySelected_last = 31; break;
-            default:    /* code... */  break;
+        $daySelected_last  = selectDate($monthStart, $yearStrat);
+        $day = selectDate($monthStart, $yearStrat);
+        $dayEnd = selectDate($monthEnd, $yearEnd);
+        $diffYear =$yearEnd - $yearStrat;
+
+        if($diffYear > 0){
+            $monthCount = 12 - $monthStart;
+            $monthInYear = ($diffYear - 1) * 12;
+            $monthAll = ( ( $monthCount + $monthEnd) + $monthInYear ) + 1;
         }
-        $day = $daySelected_last;
+        else{
+            $monthAll = ($monthEnd - $monthStart) + 1;
+        }
+        $countYear =  floor($monthAll / 12);
+        $countMonth = floor($monthAll % 12);
+
+
+        for($i = 0; $i <= $monthAll; $i++) {
+            $mod = ( ( ($monthStart -1) + $i ) % 12 ) +1;
+            if ($countYear > 0 and $i > 0 and $mod ==1){
+                $yearStrat += 1;
+            }
+        }
+
+        
         $dateTime_Start = "2019-07-01 00:00:00";
         $dateTime_Last = "$yearSelected-$monthSelected-$daySelected_last 23:59:59";
         $dateTime_Select = "$yearSelected-$monthSelected-$daySelected_start 00:00:00";
 
-
-        $transactions = DB::table('transactions')
-        ->select(
+        $transactions = DB::table('transactions')->select(
             'refNumber as phone',
             'machineId as branch',
             DB::raw('SUM(transactions.price)  AS amount'),
@@ -198,7 +225,6 @@ class TransactionsController extends Controller
             DB::raw('MAX(transactions.createdAt) AS lastDate'),
             DB::raw('COUNT(transactions.refNumber)  AS trans'),
             DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS numberOfDays'),
-            // DB::raw("DATEDIFF(MAX(transactions.createdAt, '$dateTime_Last')) AS dataDiff"),
             DB::raw("DATEDIFF( '$dateTime_Last',  MAX(transactions.createdAt)) AS lastDayOfUse"),
             DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
             DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
@@ -223,6 +249,7 @@ class TransactionsController extends Controller
         ->groupBy('refNumber', 'machineId')
         ->orderBy('amount', 'DESC')
         ->paginate(500);
+        // ===========================================================
 
         $users = DB::table('transactions')
             ->select(
@@ -247,6 +274,7 @@ class TransactionsController extends Controller
             ->groupBy('refNumber', 'machineId')
             ->orderBy('startDate')
             ->get();
+        // ===========================================================
 
         $newUser = DB::table('transactions')
             ->select(
@@ -268,7 +296,8 @@ class TransactionsController extends Controller
             ->havingBetween('startDate', [$dateTime_Start, $dateTime_Last])
             ->orderBy('startDate')
             ->get();
-
+        // ===========================================================
+   
         $activeUser = DB::table('transactions')
             ->select(
                 'refNumber',
@@ -293,6 +322,7 @@ class TransactionsController extends Controller
             ->having('statusActive', 'Active')
             ->orderBy('startDate')
             ->get();
+        // ===========================================================
 
         $deprecatedUser = DB::table('transactions')
             ->select(
@@ -319,6 +349,9 @@ class TransactionsController extends Controller
             ->orderBy('startDate')
             ->get();
 
+
+        // ===========================================================
+
         $countUser = $users->count();
         $countNewUser =  $newUser->count();
         $countActiveUser = $activeUser->count();
@@ -326,9 +359,15 @@ class TransactionsController extends Controller
         $year;
         $month;
         $day;
-        $yearEnd = null;
+        $yearEnd;
+        $monthEnd;
+        $dayEnd;
+        $monthAll;
+        $diffYear;
+        $countYear;
+        $countMonth;
 
-        return view('transactions.index', compact(
+        return view('transactions.branchBetween', compact(
             'transactions',
             'countNewUser',
             'countUser',
@@ -338,8 +377,14 @@ class TransactionsController extends Controller
             'year',
             'month',
             'day',
-            'yearEnd'
-        
+            'yearEnd', 
+            'monthEnd',
+            'dayEnd',
+            'monthAll',
+            'diffYear',
+            'countYear',
+            'countMonth'
         ));
     }
+
 }
