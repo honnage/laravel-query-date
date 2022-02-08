@@ -8,7 +8,8 @@ use Carbon\Carbon;
 
 class TransactionsBetweenController extends Controller
 {
-    public function historyReportsBetween( $branch, $year, $month)
+
+    public function historyReportsBetween( $branch, $yearStrat, $monthStart, $yearEnd, $monthEnd)
     {
         // for($i = 3; $i <= 6; $i++) {
         //     switch ( $i) { 
@@ -26,11 +27,13 @@ class TransactionsBetweenController extends Controller
         //         case '12':  $daySelected_last = 31; break;
         //         default:    /* code... */  break;
         //     }
+        $year = $yearStrat;
+        $month = $monthStart;
 
         $yearSelected = $year;      // $yearSelected = "2021";
         $monthSelected = $month;    // $monthSelected = "02";
         // $daySelected_last = $day;   // $daySelected_last = 28;
-        $daySelected_start = 1;     // $daySelected_start = 1;
+  
 
         switch ( $month) { 
             case '01':  $daySelected_last = 31; break;
@@ -153,6 +156,8 @@ class TransactionsBetweenController extends Controller
             }
         return redirect()->back()->with('success', 'บันทึกข้อมูลเรียบร้อย');
     }
+
+
 
     public function branchBetween($branch, $yearStrat, $monthStart, $yearEnd, $monthEnd)
     {

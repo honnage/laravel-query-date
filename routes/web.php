@@ -29,4 +29,5 @@ Route::post('/transactions/store/branch:{branch}/year:{year}/month:{month}',[Tra
 
 
 Route::get('/transactions/branch:{branch}/year:{yearStrat}/month:{monthStart}/to/year:{yearEnd}/month:{monthEnd}',[TransactionsBetweenController::class, 'branchBetween'])->name('transactions.branch');
-Route::post('/transactions/store/branch:{branch}/year:{yearStrat}/month:{monthStart}/to/year:{yearEnd}/month:{yearEnd}',[TransactionsBetweenController::class, 'historyReportsBetween'])->name('historyReportsBetween');
+Route::post('/transactions/store/branch:{branch}/year:{yearStrat}/month:{monthStart}/to/year:{yearEnd}/month:{monthEnd}',[TransactionsBetweenController::class, 'historyReportsBetween']);
+// http://127.0.0.1:8000/transactions/store/branch:18/year2019/month:07/to/year2019/month:09
