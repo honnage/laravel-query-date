@@ -15,17 +15,22 @@ class CreateHistoryReportDetailsTable extends Migration
     {
         Schema::create('history_report_details', function (Blueprint $table) {
             // $table->id();
-            $table->string('phone');
             $table->string('branch');
+            $table->integer('trans');
+            $table->double('amount', 10, 2);
+            $table->string('phone');
             $table->datetime('startDate');
             $table->datetime('lastDate');
-            $table->integer('countTrans');
-            $table->integer('countDate');
-            $table->integer('dataDiff');
-            $table->string('statusUser');
-            $table->string('statusActive');
-            $table->string('usageMonth');
-            $table->datetime('summaryDate');
+            $table->string('customerStatus');
+            $table->integer('numberOfDays');
+            $table->integer('lastDayOfUse');
+            $table->integer('numberOfMonth');
+            $table->string('useInMonth');
+            $table->string('ActiveStatus');
+            $table->string('dataOfYear');
+            $table->string('dataOfMonth');
+            // $table->string('summaryDate');
+            
             $table->timestamps();
         });
     }

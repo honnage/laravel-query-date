@@ -47,9 +47,15 @@
                     @csrf
                     <input type="submit" value="บันทึกลง database" class="btn btn-success my-3">
                 </form>
-                {{$year}} {{$month}} {{$day}}   <br>
+               Start {{$year}} {{$month}} {{$day}}   <br>
 
-                    
+               
+               @if($yearEnd != null)
+                End {{$yearEnd}} {{$monthEnd}} {{$dayEnd}} <br>
+                monthAll {{$monthAll}} m
+               @endif
+    
+                        
                 <div class="card">
                     <div class="card-header" style="font-size: 24px;">ตารางข้อมูล Transactions</div>
                     <div class="table-responsive">
