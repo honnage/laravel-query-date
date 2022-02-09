@@ -22,9 +22,11 @@ class CreateHistoryReportDetailsTable extends Migration
             $table->datetime('startDate');
             $table->datetime('lastDate');
             $table->string('customerStatus');
-            $table->integer('numberOfDays');
+
+            $table->integer('amountOfDays');
+            $table->integer('amountOfMonth');
             $table->integer('lastDayOfUse');
-            $table->integer('numberOfMonth');
+            $table->integer('lastMonthOfUse');
             $table->string('useInMonth');
             $table->string('ActiveStatus');
             $table->string('dataOfYear');
