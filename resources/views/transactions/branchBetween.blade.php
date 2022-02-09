@@ -72,10 +72,10 @@
                                     <th scope="col"><center>startDate</center></th>
                                     <th scope="col"><center>lastDate</center></th>
                                     <th scope="col"><center>customerStatus</center></th>
-                                    <th scope="col"><center>numberOfDays</center></th>
+                                    <th scope="col"><center>amountOfDays</center></th>
+                                    <th scope="col"><center>amountOfMonth</center></th>
                                     <th scope="col"><center>lastDayOfUse</center></th>
-                                    <th scope="col"><center>numberOfMonth</center></th>
-                                    <th scope="col"><center>useInMonth</center></th>
+                                    <th scope="col"><center>monthUsed</center></th>
                                     <th scope="col"><center>ActiveStatus</center></th>
                                     <th scope="col"><center>dataOfYear</center></th>
                                     <th scope="col"><center>dataOfMonth</center></th>
@@ -92,10 +92,10 @@
                                     <td><center>{{$row->startDate}}</center></td> 
                                     <td><center>{{$row->lastDate}}</center></td> 
                                     <td><center>{{$row->customerStatus}}</center></td>
-                                    <td><center>{{number_format($row->numberOfDays)}}</center></td>
+                                    <td><center>{{number_format($row->amountOfDays)}}</center></td>
+                                    <td><center>{{number_format($row->amountOfMonth)}}</center></td>
                                     <td><center>{{number_format($row->lastDayOfUse)}}</center></td>
-                                    <td><center>{{number_format($row->numberOfMonth)}}</center></td>
-                                    <td><center>{{$row->useInMonth}}</center></td>
+                                    <td><center>{{number_format($row->monthUsed)}}</center></td>
                                     <td><center>{{$row->ActiveStatus}}</center></td>
                                     <td><center>{{$row->dataOfYear}}</center></td>
                                     <td><center>{{$row->dataOfMonth}}</center></td>

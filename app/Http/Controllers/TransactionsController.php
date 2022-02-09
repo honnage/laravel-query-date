@@ -37,9 +37,6 @@ class TransactionsController extends Controller
                 default:    /* code... */  break;
             }
 
-            // $dateTime_Start = "2019-07-01 00:00:00";
-            // $dateTime_Last = "$yearSelected-$monthSelected-$daySelected_last 23:59:59";
-            // $dateTime_Select = "$yearSelected-$monthSelected-$daySelected_start 00:00:00"; 
 
             $dateTime_Start = "2019-07-01 00:00:00";
             $dateTime_Last = "$yearSelected-$monthSelected-$daySelected_last 23:59:59";
@@ -58,7 +55,7 @@ class TransactionsController extends Controller
                     DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS amountOfDays'),
                     DB::raw('COUNT(DISTINCT MONTH(transactions.createdAt)) AS amountOfMonth'),
                     DB::raw("DATEDIFF(  MAX(transactions.createdAt), '$dateTime_Last') AS lastDayOfUse"),
-                    DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS lastMonthOfUse '),
+                    DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
                     DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
                     DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
                 
@@ -95,7 +92,7 @@ class TransactionsController extends Controller
                         "amountOfDays" => $data->amountOfDays,
                         "amountOfMonth" => $data->amountOfMonth,
                         "lastDayOfUse" =>  $data->lastDayOfUse,
-                        "lastMonthOfUse" =>  $data->lastMonthOfUse,
+                        "monthUsed" =>  $data->monthUsed,
                         "useInMonth" => $data->useInMonth,
                         "ActiveStatus" =>  $data->ActiveStatus,
                         "dataOfYear" =>  $data->dataOfYear,
@@ -106,30 +103,32 @@ class TransactionsController extends Controller
                     );
 
                     // $select_HistoryReportDetails = DB::table('history_report_details')
-                    //     ->select(
-                    //         'branch',
-                    //         'trans',
-                    //         'amount',
-                    //         'phone',
-                    //         'startDate',
-                    //         'lastDate',
-                    //         'customerStatus',
-                    //         'numberOfDays',
-                    //         "lastDayOfUse",
-                    //         'numberOfMonth',
-                    //         'useInMonth',
-                    //         'ActiveStatus',
-                    //         'dataOfYear',
-                    //         'dataOfMonth',
-                    //     )
-                    //     ->where('phone', $data->phone)
-                    //     ->where('branch', $data->branch)
-                    //     ->where('lastDate', $data->lastDate)
-                    //     ->where('dataOfYear', $data->dataOfYear)
-                    //     ->where('dataOfMonth', $data->dataOfMonth)
-                    //     // ->where('summaryDate', $dateTime_Summarry)
-                    //     ->orderBy('startDate')
-                    //     ->get();
+                    // ->select(
+                    //     'branch',
+                    //     'trans',
+                    //     'amount',
+                    //     'phone',
+                    //     'startDate',
+                    //     'lastDate',
+    
+                    //     'customerStatus',
+                    //     'amountOfDays',
+                    //     'amountOfMonth',
+                    //     'lastDayOfUse',
+                    //     'monthUsed',
+                    //     'useInMonth',
+    
+                    //     'ActiveStatus',
+                    //     'dataOfYear',
+                    //     'dataOfMonth',
+                    // )
+                    // ->where('phone', $data->phone)
+                    // ->where('branch', $data->branch)
+                    // ->where('lastDate', $data->lastDate)
+                    // ->where('dataOfYear', $data->dataOfYear)
+                    // ->where('dataOfMonth', $data->dataOfMonth)
+                    // ->orderBy('amount', 'DESC')
+                    // ->get();
 
 
                     // if (count($select_HistoryReportDetails) == 0) {
@@ -187,7 +186,7 @@ class TransactionsController extends Controller
             DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS amountOfDays'),
             DB::raw('COUNT(DISTINCT MONTH(transactions.createdAt)) AS amountOfMonth'),
             DB::raw("DATEDIFF(  MAX(transactions.createdAt), '$dateTime_Last') AS lastDayOfUse"),
-            DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS lastMonthOfUse '),
+            DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
             DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
             DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
           

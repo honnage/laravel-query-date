@@ -26,7 +26,7 @@ class CreateHistoryReportDetailsTable extends Migration
             $table->integer('amountOfDays');
             $table->integer('amountOfMonth');
             $table->integer('lastDayOfUse');
-            $table->integer('lastMonthOfUse');
+            $table->integer('monthUsed');
             $table->string('useInMonth');
             $table->string('ActiveStatus');
             $table->string('dataOfYear');
