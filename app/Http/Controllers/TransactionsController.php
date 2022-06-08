@@ -13,15 +13,15 @@ class TransactionsController extends Controller
         // for($i = 7; $i <= 9; $i++) {
             $yearSelected = $year;
             $monthSelected = $i;
-            // $monthSelected = $month;   
-          
-            switch ( $i) { 
+            // $monthSelected = $month;
+
+            switch ( $i) {
                 case '01':  $daySelected_last = 31; break;
-                case '02':  
+                case '02':
                     if( ($year % 400 ==0) OR ($year % 4 == 0) AND ($year % 100 != 0)){
-                        $daySelected_last = 29; 
+                        $daySelected_last = 29;
                     }else{
-                        $daySelected_last = 28; 
+                        $daySelected_last = 28;
                     }
                 break;
                 case '03':  $daySelected_last = 31; break;
@@ -32,7 +32,7 @@ class TransactionsController extends Controller
                 case '08':  $daySelected_last = 31; break;
                 case '09':  $daySelected_last = 30; break;
                 case '10':  $daySelected_last = 31; break;
-                case '11':  $daySelected_last = 30; break;  
+                case '11':  $daySelected_last = 30; break;
                 case '12':  $daySelected_last = 31; break;
                 default:    /* code... */  break;
             }
@@ -43,7 +43,7 @@ class TransactionsController extends Controller
             // $dateTime_Select = "$yearSelected-$monthSelected-$daySelected_start 00:00:00";
 
             // $dateTime_Summarry = "$yearSelected / $monthSelected";
-        
+
             $selected = DB::table('transactions')
                 ->select(
                     'refNumber as phone',
@@ -58,21 +58,21 @@ class TransactionsController extends Controller
                     DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
                     DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
                     DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
-                
-                    DB::raw("CASE 
+
+                    DB::raw("CASE
                         WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 AND sum(transactions.price) > 1000 then 'Churn_NeedCheck'
                         WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 THEN 'Churn'
                         WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) <= 1 THEN 'Churn_1stTimeUse'
-                        ELSE 'Active' 
+                        ELSE 'Active'
                         END ActiveStatus"),
-                    DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected 
-                        THEN 'New Customer' 
-                        ELSE 'Old Customer' 
+                    DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                        THEN 'New Customer'
+                        ELSE 'Old Customer'
                         END customerStatus "),
-                    DB::raw("CASE WHEN  MONTH('$dateTime_Last') =  MONTH(MAX(transactions.createdAt)) AND YEAR('$dateTime_Last') = YEAR(MAX(transactions.createdAt)) 
+                    DB::raw("CASE WHEN  MONTH('$dateTime_Last') =  MONTH(MAX(transactions.createdAt)) AND YEAR('$dateTime_Last') = YEAR(MAX(transactions.createdAt))
                         THEN 'TRUE'
                         ELSE 'FALSE'
-                        END useInMonth ")     
+                        END useInMonth ")
                 )
                 ->where('machineId', $branch)
                 ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
@@ -109,13 +109,13 @@ class TransactionsController extends Controller
                     //     'phone',
                     //     'startDate',
                     //     'lastDate',
-    
+
                     //     'customerStatus',
                     //     'amountOfDays',
                     //     'lastDayOfUse',
                     //     'monthUsed',
                     //     'useInMonth',
-    
+
                     //     'ActiveStatus',
                     //     'dataOfYear',
                     //     'dataOfMonth',
@@ -146,13 +146,13 @@ class TransactionsController extends Controller
         $monthSelected = $month;    // $monthSelected = "02";
         $daySelected_start = 1;     // $daySelected_start = 1;
 
-        switch ( $month) { 
+        switch ( $month) {
             case '01':  $daySelected_last = 31; break;
-            case '02':  
+            case '02':
                 if( ($year % 400 ==0) OR ($year % 4 == 0) AND ($year % 100 != 0)){
-                    $daySelected_last = 29; 
+                    $daySelected_last = 29;
                 }else{
-                    $daySelected_last = 28; 
+                    $daySelected_last = 28;
                 }
             break;
             case '03':  $daySelected_last = 31; break;
@@ -163,7 +163,7 @@ class TransactionsController extends Controller
             case '08':  $daySelected_last = 31; break;
             case '09':  $daySelected_last = 30; break;
             case '10':  $daySelected_last = 31; break;
-            case '11':  $daySelected_last = 30; break;  
+            case '11':  $daySelected_last = 30; break;
             case '12':  $daySelected_last = 31; break;
             default:    /* code... */  break;
         }
@@ -184,106 +184,34 @@ class TransactionsController extends Controller
             DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS amountOfDays'),
             DB::raw("DATEDIFF(  MAX(transactions.createdAt), '$dateTime_Last') AS lastDayOfUse"),
             DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
-            DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
-            DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
-          
-            DB::raw("CASE 
+
+
+            DB::raw("EXTRACT(YEAR_MONTH FROM date(min('$dateTime_Select'))) AS yearMonth"),
+
+            DB::raw("CASE
                 WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 AND sum(transactions.price) > 1000 then 'Churn_NeedCheck'
                 WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 THEN 'Churn'
                 WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) <= 1 THEN 'Churn_1stTimeUse'
-                ELSE 'Active' 
+                ELSE 'Active'
                 END ActiveStatus"),
-            DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected 
-                THEN 'New Customer' 
-                ELSE 'Old Customer' 
+            DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                THEN 'New Customer'
+                ELSE 'Old Customer'
                 END customerStatus "),
-            DB::raw("CASE WHEN  MONTH('$dateTime_Last') =  MONTH(MAX(transactions.createdAt)) AND YEAR('$dateTime_Last') = YEAR(MAX(transactions.createdAt)) 
+            DB::raw("CASE WHEN  MONTH('$dateTime_Last') =  MONTH(MAX(transactions.createdAt)) AND YEAR('$dateTime_Last') = YEAR(MAX(transactions.createdAt))
                 THEN 'TRUE'
                 ELSE 'FALSE'
-                END useInMonth ")     
+                END useInMonth ")
         )
         ->where('machineId', $branch)
+        ->where('type', 'washing')
+        ->whereNotIn('status', ['CANCEL_BY_MC_FAIL'])
         ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
         ->groupBy('refNumber', 'machineId')
         ->orderBy('amount', 'DESC')
         ->paginate(500);
 
         $users = DB::table('transactions')
-            ->select(
-                'refNumber',
-                'machineId',
-                DB::raw('MIN(transactions.createdAt) AS startDate'),
-                DB::raw('MAX(transactions.createdAt) AS lastDate'),
-                DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
-                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
-                DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( MAX(transactions.createdAt) , TIMESTAMPADD(MONTH, -2, '$dateTime_Select') ) > 0
-                    THEN 'Active' 
-                    ELSE 'Deprecated' 
-                    END statusActive"),
-                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected  
-                    THEN 'new user' 
-                    ELSE 'old user'
-                    END statusUser ")
-            )
-            ->where('machineId', $branch)
-            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
-            ->groupBy('refNumber', 'machineId')
-            ->orderBy('startDate')
-            ->get();
-
-        $newUser = DB::table('transactions')
-            ->select(
-                'refNumber',
-                'machineId',
-                DB::raw('MIN(transactions.createdAt) AS startDate'),
-                DB::raw('MAX(transactions.createdAt) AS lastDate'),
-                DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
-                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
-                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected 
-                    THEN 'new user' 
-                    ELSE 'old user' 
-                    END statusUser ")
-            )
-            ->where('machineId', $branch)
-            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
-            ->groupBy('refNumber', 'machineId')
-            ->having('statusUser', 'new user')
-            ->havingBetween('startDate', [$dateTime_Start, $dateTime_Last])
-            ->orderBy('startDate')
-            ->get();
-
-        $activeUser = DB::table('transactions')
-        // $transactions = DB::table('transactions')
-        // ->select(
-        //     'refNumber as phone',
-        //     'machineId as branch',
-        //     DB::raw('SUM(transactions.price)  AS amount'),
-        //     DB::raw('MIN(transactions.createdAt) AS startDate'),
-        //     DB::raw('MAX(transactions.createdAt) AS lastDate'),
-        //     DB::raw('COUNT(transactions.refNumber)  AS trans'),
-        //     DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS amountOfDays'),
-        //     DB::raw("DATEDIFF(  MAX(transactions.createdAt), '$dateTime_Last') AS lastDayOfUse"),
-        //     DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
-        //     DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
-        //     DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
-          
-        //     DB::raw("CASE 
-        //         WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 AND sum(transactions.price) > 1000 then 'Churn_NeedCheck'
-        //         WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 THEN 'Churn'
-        //         WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) <= 1 THEN 'Churn_1stTimeUse'
-        //         ELSE 'Active' 
-        //         END ActiveStatus"),
-        //     DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected AND MIN(YEAR(transactions.createdAt)) = $yearSelected 
-        //         THEN 'New Customer' 
-        //         ELSE 'Old Customer' 
-        //         END customerStatus "),
-        //     DB::raw("CASE WHEN  MONTH('$dateTime_Last') =  MONTH(MAX(transactions.createdAt)) AND YEAR('$dateTime_Last') = YEAR(MAX(transactions.createdAt)) 
-        //         THEN 'TRUE'
-        //         ELSE 'FALSE'
-        //         END useInMonth ")     
-        // )
-
             ->select(
                 'refNumber as phone',
                 'machineId as branch',
@@ -296,21 +224,86 @@ class TransactionsController extends Controller
                 DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
                 DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
                 DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
-
-                DB::raw("CASE 
+                DB::raw("CASE
                     WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 AND sum(transactions.price) > 1000 then 'Churn_NeedCheck'
                     WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 THEN 'Churn'
                     WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) <= 1 THEN 'Churn_1stTimeUse'
-                    ELSE 'Active' 
+                    ELSE 'Active'
                     END ActiveStatus"),
-
-            
-                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected  
-                    THEN 'new user' 
-                    ELSE 'old user' 
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                    THEN 'new user'
+                    ELSE 'old user'
                     END statusUser ")
             )
             ->where('machineId', $branch)
+            ->where('type', 'washing')
+            ->whereNotIn('status', ['CANCEL_BY_MC_FAIL'])
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
+            ->groupBy('refNumber', 'machineId')
+            ->orderBy('startDate')
+            ->get();
+
+        $newUser = DB::table('transactions')
+            ->select(
+                'refNumber as phone',
+                'machineId as branch',
+                DB::raw('SUM(transactions.price)  AS amount'),
+                DB::raw('MIN(transactions.createdAt) AS startDate'),
+                DB::raw('MAX(transactions.createdAt) AS lastDate'),
+                DB::raw('COUNT(transactions.refNumber)  AS trans'),
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS amountOfDays'),
+                DB::raw("DATEDIFF(  MAX(transactions.createdAt), '$dateTime_Last') AS lastDayOfUse"),
+                DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
+                DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
+                DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
+                DB::raw("CASE
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 AND sum(transactions.price) > 1000 then 'Churn_NeedCheck'
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 THEN 'Churn'
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) <= 1 THEN 'Churn_1stTimeUse'
+                    ELSE 'Active'
+                    END ActiveStatus"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                    THEN 'new user'
+                    ELSE 'old user'
+                    END statusUser ")
+            )
+            ->where('machineId', $branch)
+            ->where('type', 'washing')
+            ->whereNotIn('status', ['CANCEL_BY_MC_FAIL'])
+            ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
+            ->groupBy('refNumber', 'machineId')
+            ->having('statusUser', 'new user')
+            ->havingBetween('startDate', [$dateTime_Start, $dateTime_Last])
+            ->orderBy('startDate')
+            ->get();
+
+        $activeUser = DB::table('transactions')
+            ->select(
+                'refNumber as phone',
+                'machineId as branch',
+                DB::raw('SUM(transactions.price)  AS amount'),
+                DB::raw('MIN(transactions.createdAt) AS startDate'),
+                DB::raw('MAX(transactions.createdAt) AS lastDate'),
+                DB::raw('COUNT(transactions.refNumber)  AS trans'),
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS amountOfDays'),
+                DB::raw("DATEDIFF(  MAX(transactions.createdAt), '$dateTime_Last') AS lastDayOfUse"),
+                DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
+                DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
+                DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
+                DB::raw("CASE
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 AND sum(transactions.price) > 1000 then 'Churn_NeedCheck'
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 THEN 'Churn'
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) <= 1 THEN 'Churn_1stTimeUse'
+                    ELSE 'Active'
+                    END ActiveStatus"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                    THEN 'new user'
+                    ELSE 'old user'
+                    END statusUser ")
+            )
+            ->where('machineId', $branch)
+            ->where('type', 'washing')
+            ->whereNotIn('status', ['CANCEL_BY_MC_FAIL'])
             ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
             ->groupBy('refNumber', 'machineId')
             ->having('ActiveStatus', 'Active')
@@ -319,28 +312,36 @@ class TransactionsController extends Controller
 
         $deprecatedUser = DB::table('transactions')
             ->select(
-                'refNumber',
-                'machineId',
+                'refNumber as phone',
+                'machineId as branch',
+                DB::raw('SUM(transactions.price)  AS amount'),
                 DB::raw('MIN(transactions.createdAt) AS startDate'),
                 DB::raw('MAX(transactions.createdAt) AS lastDate'),
-                DB::raw('COUNT(DATE(createdAt)) AS countTrans'),
-                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS countDate'),
-                DB::raw("DATEDIFF('$dateTime_Last', MAX(transactions.createdAt)) AS dataDiff"),
-                DB::raw("CASE WHEN DATEDIFF( MAX(transactions.createdAt) , TIMESTAMPADD(MONTH, -2, '$dateTime_Select') ) > 0
-                    THEN 'Active' 
-                    ELSE 'Deprecated' 
-                    END statusActive"),
-                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected  
-                    THEN 'new user' 
-                    ELSE 'old user' 
+                DB::raw('COUNT(transactions.refNumber)  AS trans'),
+                DB::raw('COUNT(DISTINCT DATE(transactions.createdAt)) AS amountOfDays'),
+                DB::raw("DATEDIFF(  MAX(transactions.createdAt), '$dateTime_Last') AS lastDayOfUse"),
+                DB::raw('TIMESTAMPDIFF(month, min(transactions.createdAt), max(transactions.updatedAt)) AS monthUsed '),
+                DB::raw("YEAR('$dateTime_Last') AS dataOfYear"),
+                DB::raw("MONTH('$dateTime_Last') AS dataOfMonth"),
+                DB::raw("CASE
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 AND sum(transactions.price) > 1000 then 'Churn_NeedCheck'
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) > 1 THEN 'Churn'
+                    WHEN DATEDIFF( MAX(transactions.updatedAt), '$dateTime_Last' ) < -35 AND COUNT(DISTINCT DATE(transactions.updatedAt)) <= 1 THEN 'Churn_1stTimeUse'
+                    ELSE 'Active'
+                    END ActiveStatus"),
+                DB::raw("CASE WHEN MIN(MONTH(transactions.createdAt)) = $monthSelected  AND MIN(YEAR(transactions.createdAt)) = $yearSelected
+                    THEN 'new user'
+                    ELSE 'old user'
                     END statusUser ")
             )
             ->where('machineId', $branch)
+            ->where('type', 'washing')
+            ->whereNotIn('status', ['CANCEL_BY_MC_FAIL'])
             ->whereBetween('createdAt', [$dateTime_Start, $dateTime_Last])
             ->groupBy('refNumber', 'machineId')
-            ->having('statusActive', 'deprecated')
-            ->orderBy('startDate')
+            ->having('ActiveStatus', '<>', 'Active')
             ->get();
+
 
         $countUser = $users->count();
         $countNewUser =  $newUser->count();
@@ -351,7 +352,7 @@ class TransactionsController extends Controller
         $day;
         $yearEnd = null;
 
-        return view('transactions.index', compact(
+        return view('transactions.query', compact(
             'transactions',
             'countNewUser',
             'countUser',
@@ -362,7 +363,7 @@ class TransactionsController extends Controller
             'month',
             'day',
             'yearEnd'
-        
+
         ));
     }
 }
