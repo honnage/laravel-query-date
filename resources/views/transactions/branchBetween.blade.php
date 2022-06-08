@@ -73,7 +73,6 @@
                                     <th scope="col"><center>lastDate</center></th>
                                     <th scope="col"><center>customerStatus</center></th>
                                     <th scope="col"><center>amountOfDays</center></th>
-                                    <th scope="col"><center>amountOfMonth</center></th>
                                     <th scope="col"><center>lastDayOfUse</center></th>
                                     <th scope="col"><center>monthUsed</center></th>
                                     <th scope="col"><center>ActiveStatus</center></th>
@@ -93,7 +92,6 @@
                                     <td><center>{{$row->lastDate}}</center></td> 
                                     <td><center>{{$row->customerStatus}}</center></td>
                                     <td><center>{{number_format($row->amountOfDays)}}</center></td>
-                                    <td><center>{{number_format($row->amountOfMonth)}}</center></td>
                                     <td><center>{{number_format($row->lastDayOfUse)}}</center></td>
                                     <td><center>{{number_format($row->monthUsed)}}</center></td>
                                     <td><center>{{$row->ActiveStatus}}</center></td>

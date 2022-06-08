@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TransactionsController;
 use App\Http\Controllers\TransactionsBetweenController;
+use App\Http\Controllers\QueryTransactionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,11 +19,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/queryTransactions/branch:{branch}/year:{year}/month:{month}',[QueryTransactionController::class, 'query'])->name('transactions.query');
 
-
-Route::get('/transactions/all', [TransactionsController::class, 'index'])->name('transactions.index');
-// Route::get('/transactions/branch:{branch}', [TransactionsController::class, 'branch'])->name('transactions.branch');
-// Route::post('/transactions/store/branch:{branch}',[TransactionsController::class,'historyReports'])->name('historyReports');
 
 Route::get('/transactions/branch:{branch}/year:{year}/month:{month}',[TransactionsController::class, 'branch'])->name('transactions.branch');
 Route::post('/transactions/store/branch:{branch}/year:{year}/month:{month}',[TransactionsController::class,'historyReports'])->name('historyReports');
